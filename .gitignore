@@ -1,0 +1,6 @@
+venv*
+scierc
+*.ipynb_checkpoints
+*.pyc
+*.egg-info/
+models/

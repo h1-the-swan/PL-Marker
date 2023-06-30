@@ -1,0 +1,44 @@
+version: v2
+description: PL-Marker NER endchunks (s2-cirrascale idx500-1000 gpu 1proc batch60 preemptible)
+tasks:
+  # We only have one step in our experiment, so there's only one entry in this list
+  - name: ner
+    image:
+      beaker: jasonp/pl-marker-ner
+    command:
+      [
+        python,
+        -u,
+        entrypoint.py,
+        --min-idx,
+        500,
+        --max-idx,
+        1000,
+        # --processes,
+        # 1,
+        --gpu,
+        --batch,
+        60,
+        --debug
+      ]
+    datasets:
+      - mountPath: /data
+        source:
+          beaker: jasonp/plmarker_ner_input
+      - mountPath: /models/sciner-scibert/
+        source:
+          beaker: jasonp/sciner-scibert-model
+    result:
+      # Beaker will capture anything that's written to this location and store it in the results
+      # dataset.
+      path: /output
+    resources:
+      gpuCount: 1
+    #   cpuCount: 4
+    context:
+      cluster: ai2/s2-cirrascale
+      # cluster: ai2/general-gcp
+      priority: preemptible
+    envVars:
+      - name: CUDA_LAUNCH_BLOCKING
+        value: 1

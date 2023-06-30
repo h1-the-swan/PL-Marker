@@ -1,0 +1,73 @@
+version: v2
+description: PL-Marker NER test (s2-cirrascale 0gpu batch0)
+tasks:
+  # We only have one step in our experiment, so there's only one entry in this list
+  - name: ner
+    image:
+      beaker: jasonp/pl-marker-ner
+    command:
+      [
+        python,
+        -u,
+        run_acener_modified.py,
+        --model_type,
+        bertspanmarker,
+        --model_name_or_path,
+        /models/sciner-scibert,
+        --do_lower_case,
+        --data_dir,
+        /scierc,
+        --learning_rate,
+        2e-5,
+        --num_train_epochs,
+        50,
+        --per_gpu_train_batch_size,
+        8,
+        --per_gpu_eval_batch_size,
+        # 60,
+        0,
+        --gradient_accumulation_steps,
+        1,
+        --max_seq_length,
+        256,
+        --max_mention_ori_length,
+        8,
+        --do_eval,
+        # --eval_all_checkpoints,
+        --fp16,
+        --seed,
+        42,
+        --onedropout,
+        --lminit,
+        --train_file,
+        train.json,
+        --dev_file,
+        dev.json,
+        --test_file,
+        /scierc/test_titles_abstracts_plmarker_scierc_004974.json,
+        --output_dir,
+        /output,
+        # --overwrite_output_dir,
+        --output_results,
+      ]
+    datasets:
+      - mountPath: /scierc
+        source:
+          beaker: jasonp/test_titles_abstracts_plmarker_scierc_004974.json
+      - mountPath: /models/sciner-scibert/
+        source:
+          beaker: jasonp/sciner-scibert-model
+    result:
+      # Beaker will capture anything that's written to this location and store it in the results
+      # dataset.
+      path: /output
+    resources:
+      # gpuCount: 1
+      gpuCount: 0
+    context:
+      cluster: ai2/s2-cirrascale
+      # cluster: ai2/general-gcp
+      priority: normal
+    envVars:
+      - name: CUDA_LAUNCH_BLOCKING
+        value: 1

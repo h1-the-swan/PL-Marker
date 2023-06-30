@@ -1,0 +1,30 @@
+version: v2
+description: PL-Marker Beaker Image test
+tasks:
+  # We only have one step in our experiment, so there's only one entry in this list
+  - name: testbeaker
+    image:
+      beaker: jasonp/pl-marker-ner
+    command:
+      [
+        ls,
+        -lha,
+        /model,
+      ]
+    datasets:
+      - mountPath: /data
+        source:
+          beaker: jasonp/ner_input_sample100
+      - mountPath: /model
+        source:
+          beaker: jasonp/sciner-scibert-model
+    result:
+      # Beaker will capture anything that's written to this location and store it in the results
+      # dataset.
+      path: /stage/models/sciner-scibert
+    resources:
+      gpuCount: 1
+    context:
+      cluster: ai2/s2-cirrascale
+      priority: normal
+

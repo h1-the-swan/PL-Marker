@@ -1,0 +1,7 @@
+figs
+venv
+venv_beaker
+# models/**/ent_pred_test*
+models/
+
+notebooks/
